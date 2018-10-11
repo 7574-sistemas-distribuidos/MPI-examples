@@ -59,17 +59,22 @@ int main (int argc, char* argv[]) {
         rand_array = new double[N];
         data_generation<N>(rank, rand_array);
 
+        // Scatter the samples
         printf("[RANK %d] Proceed to send data\n", rank);
         MPI_Scatter(rand_array, N_PER_PROCESS, MPI_DOUBLE, scatter_rand_array, N_PER_PROCESS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         printf("[RANK %d] Data has been sent\n", rank);
 
+        // Gather the results
+        int32_t results[processes];
         int32_t cum_results = 0;
-        int32_t remote_result = 0;
+
+        // recv_counter is the amount of metrics received PER PROCESS
+        MPI_Gather(&results, 1, MPI_INT, &results, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
         // Receive the hits from all the processes
         for (int32_t i = 1; i < size; ++i) {
-            MPI_Recv(&remote_result, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            printf("[RANK %d] Result received from Process %d. Result: %d\n", rank, i, remote_result);
-            cum_results += remote_result;
+            printf("[RANK %d] Result received from Process %d. Result: %d\n", rank, i, results[i]);
+            cum_results += results[i];
         }
 
         double pi_estimation = 4 * cum_results / (double) (N/2);
@@ -86,11 +91,12 @@ int main (int argc, char* argv[]) {
         // Execute the computation
         int32_t result = dart_computation(scatter_rand_array, N_PER_PROCESS);
 
+        // Send the results to the ROOT process via a Gather
         printf("[RANK %d] Proceed to send result to root: %d\n", rank, result);
-        MPI_Send(&result, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-        delete [] scatter_rand_array;
+        MPI_Gather(&result, 1, MPI_INT, NULL, 0, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
+    delete [] scatter_rand_array;
     MPI_Finalize();
     return 0;
 }
