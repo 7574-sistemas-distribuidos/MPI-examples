@@ -55,7 +55,7 @@ int main (int argc, char* argv[]) {
 
     // Generate a huge array of random numbers JUST in rank 0 process
     // MAX_INT:  2147483647
-    const int32_t N = 10000000;
+    const int32_t N = 50000000;
     double* rand_array = new double[N];
     data_generation<N>(rank, rand_array);
 

@@ -17,4 +17,4 @@ fi
 docker build -f $(pwd)/Dockerfile -t openmpi_example:v0.0.1 .
 
 # Run the example
-docker run --privileged=true --rm -e PROCESSORS="$1" -it openmpi_example:v0.0.1 
+docker run --privileged=true --name mpi-broadcast --rm -e PROCESSORS="$1" -it openmpi_example:v0.0.1 
