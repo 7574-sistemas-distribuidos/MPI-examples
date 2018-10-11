@@ -1,0 +1,18 @@
+version: '3'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server.dockerfile
+
+  client:
+    build:
+      context: .
+      dockerfile: client.dockerfile
+    environment:
+      - LOOP_TIMEOUT=10
+      - LOOP_EXECUTIONS=10
+      - PARAM1=2
+      - PARAM2=3
+    depends_on:
+      - server

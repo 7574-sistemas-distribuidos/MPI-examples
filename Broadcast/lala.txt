@@ -1,0 +1,76 @@
+Sending build context to Docker daemon   12.8kB
+Step 1/4 : FROM openmpi:3.0.0
+ ---> f1191fcee75c
+Step 2/4 : WORKDIR /tmp
+ ---> Using cache
+ ---> 1f7ca3bbb18a
+Step 3/4 : COPY src /tmp/src
+ ---> 21cb8bebf428
+Step 4/4 : ENTRYPOINT /tmp/src/run.sh
+ ---> Running in fe9dd0a64655
+Removing intermediate container fe9dd0a64655
+ ---> f7fc512f7f81
+Successfully built f7fc512f7f81
+Successfully tagged openmpi_example:v0.0.1
+mpic++ -o mpi_broadcast mpi_broadcast.cpp
+[RANK 0] Starting simulation
+[RANK 3] Starting simulation
+[RANK 3]: Proceed to receive data
+[RANK 2] Starting simulation
+[RANK 2]: Proceed to receive data
+[RANK 4] Starting simulation
+[RANK 4]: Proceed to receive data
+[RANK 6] Starting simulation
+[RANK 6]: Proceed to receive data
+[RANK 1] Starting simulation
+[RANK 1]: Proceed to receive data
+[RANK 5] Starting simulation
+[RANK 5]: Proceed to receive data
+[RANK 7] Starting simulation
+[RANK 7]: Proceed to receive data
+[RANK 9] Starting simulation
+[RANK 9]: Proceed to receive data
+[RANK 8] Starting simulation
+[RANK 8]: Proceed to receive data
+[RANK 0] Proceed to send data
+[RANK 0] Data has been sent
+[RANK 1] Data has been received
+[RANK 1] Dart computation. Begin: 100000 - End: 199999
+[RANK 1] Proceed to send result to root: 39125
+[RANK 0] Result received from Process 1. Result: 39125
+[RANK 2] Data has been received
+[RANK 2] Dart computation. Begin: 200000 - End: 299999
+[RANK 2] Proceed to send result to root: 39130
+[RANK 0] Result received from Process 2. Result: 39130
+[RANK 3] Data has been received
+[RANK 3] Dart computation. Begin: 300000 - End: 399999
+[RANK 3] Proceed to send result to root: 39070
+[RANK 0] Result received from Process 3. Result: 39070
+[RANK 4] Data has been received
+[RANK 4] Dart computation. Begin: 400000 - End: 499999
+[RANK 4] Proceed to send result to root: 39383
+[RANK 0] Result received from Process 4. Result: 39383
+[RANK 6] Data has been received
+[RANK 6] Dart computation. Begin: 600000 - End: 699999
+[RANK 8] Data has been received
+[RANK 8] Dart computation. Begin: 800000 - End: 899999
+[RANK 9] Data has been received
+[RANK 6] Proceed to send result to root: 39359
+[RANK 7] Data has been received
+[RANK 7] Dart computation. Begin: 700000 - End: 799999
+[RANK 5] Data has been received
+[RANK 5] Dart computation. Begin: 500000 - End: 599999
+[RANK 0] Result received from Process 5. Result: 39354
+[RANK 0] Result received from Process 6. Result: 39359
+[RANK 5] Proceed to send result to root: 39354
+[RANK 0] Result received from Process 7. Result: 39369
+[RANK 0] Result received from Process 8. Result: 39183
+[RANK 7] Proceed to send result to root: 39369
+[RANK 8] Proceed to send result to root: 39183
+[RANK 9] Dart computation. Begin: 900000 - End: 999999
+[RANK 9] Proceed to send result to root: 39406
+[RANK 0] Result received from Process 9. Result: 39406
+[RANK 0] All results have arrived. Pi estmation: 0.706758000000
+real	0m1.542s
+user	0m5.395s
+sys	0m0.213s
