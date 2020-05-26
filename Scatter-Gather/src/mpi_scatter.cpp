@@ -41,7 +41,7 @@ int main (int argc, char* argv[]) {
     MPI_Comm_size (MPI_COMM_WORLD, &size);
 
     // Number of processes doing some computation
-    int processes = size - 1;
+    int processes = size;
 
     // Start 
     srand((int)time(0));
@@ -55,45 +55,41 @@ int main (int argc, char* argv[]) {
     double* scatter_rand_array = NULL;
     scatter_rand_array = new double[N_PER_PROCESS];
 
+    // Just generate the data in the root process. In a real example, the data
+    // would be retrieved from a file/DFS/ etc.
+    const char* operation = "receive";
     if (rank == 0) {
+        operation = "send";
         rand_array = new double[N];
         data_generation<N>(rank, rand_array);
+    }
 
-        // Scatter the samples
-        printf("[RANK %d] Proceed to send data\n", rank);
-        MPI_Scatter(rand_array, N_PER_PROCESS, MPI_DOUBLE, scatter_rand_array, N_PER_PROCESS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        printf("[RANK %d] Data has been sent\n", rank);
+    // Scatter the samples
+    printf("[RANK %d] Proceed to %s data\n", rank, operation);
+    MPI_Scatter(rand_array, N_PER_PROCESS, MPI_DOUBLE, scatter_rand_array, N_PER_PROCESS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    printf("[RANK %d] Data has been %s\n", rank, operation);
 
+    // Execute the computation
+    int32_t result = dart_computation(scatter_rand_array, N_PER_PROCESS);
+
+    // Send the results to the ROOT process via a Gather
+    printf("[RANK %d] Proceed to send result to root: %d\n", rank, result);
+    int32_t results[processes];
+    MPI_Gather(&result, 1, MPI_INT, &results, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
         // Gather the results
-        int32_t results[processes];
         int32_t cum_results = 0;
 
-        // recv_counter is the amount of metrics received PER PROCESS
-        MPI_Gather(&results, 1, MPI_INT, &results, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
         // Receive the hits from all the processes
-        for (int32_t i = 1; i < size; ++i) {
+        for (int32_t i = 0; i < size; ++i) {
             printf("[RANK %d] Result received from Process %d. Result: %d\n", rank, i, results[i]);
             cum_results += results[i];
         }
 
         double pi_estimation = 4 * cum_results / (double) (N/2);
         printf("[RANK %d] All results have arrived. Pi estmation: %0.12f", pi_estimation);
-
         delete [] rand_array;
-    }
-    else {
-        // scatter_rand_array = new double[N_PER_PROCESS];
-        printf("[RANK %d] Proceed to receive data\n", rank);
-        MPI_Scatter(rand_array, N_PER_PROCESS, MPI_DOUBLE, scatter_rand_array, N_PER_PROCESS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        printf("[RANK %d] Data has been received\n", rank);
-
-        // Execute the computation
-        int32_t result = dart_computation(scatter_rand_array, N_PER_PROCESS);
-
-        // Send the results to the ROOT process via a Gather
-        printf("[RANK %d] Proceed to send result to root: %d\n", rank, result);
-        MPI_Gather(&result, 1, MPI_INT, NULL, 0, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
     delete [] scatter_rand_array;
