@@ -57,13 +57,18 @@ int main (int argc, char* argv[]) {
     // MAX_INT:  2147483647
     const int32_t N = 50000000;
     double* rand_array = new double[N];
-    data_generation<N>(rank, rand_array);
+
+    const char* operation = "receive";
+    if (rank == 0) {
+        operation = "send";
+        data_generation<N>(rank, rand_array);
+    }
+
+    printf("[RANK %d] Proceed to %s data\n", rank, operation);
+    MPI_Bcast(rand_array, N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    printf("[RANK %d] Data has been %s\n", rank, operation);
 
     if (rank == 0) {
-        printf("[RANK %d] Proceed to send data\n", rank);
-        MPI_Bcast(rand_array, N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        printf("[RANK %d] Data has been sent\n", rank);
-
         int32_t cum_results = 0;
         int32_t remote_result = 0;
         // Receive the hits from all the processes
@@ -75,12 +80,7 @@ int main (int argc, char* argv[]) {
 
         double pi_estimation = 4 * cum_results / (double) (N/2);
         printf("[RANK %d] All results have arrived. Pi estmation: %0.12f", pi_estimation);
-    }
-    else {
-        printf("[RANK %d]: Proceed to receive data\n", rank);
-        MPI_Bcast(rand_array, N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        printf("[RANK %d] Data has been received\n", rank);
-
+    } else {
         // Execute the computation
         int32_t result = dart_computation<N>(rank, processes, rand_array);
         printf("[RANK %d] Proceed to send result to root: %d\n", rank, result);
