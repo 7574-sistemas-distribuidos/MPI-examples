@@ -2,7 +2,6 @@
 export ROOTPATH="$(dirname "$(readlink -f "$0")")"
 
 # Compile the example
-. /opt/env/openmpi-3.0.0.sh
 cd $ROOTPATH
 make -f $ROOTPATH/Makefile
 
