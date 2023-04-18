@@ -30,7 +30,7 @@ int main (int argc, char* argv[]) {
     int64_t N = 1E9;
 
     int64_t iterations = N / size;
-    printf("[RANK %d] Number of iterations: %d\n", rank, iterations);
+    printf("[RANK %d] Number of iterations: %d\n", rank, (int)iterations);
     for (int i = 0; i < iterations; ++i) {
         x = rand() / (RAND_MAX + 1.0);
         y = rand() / (RAND_MAX + 1.0);

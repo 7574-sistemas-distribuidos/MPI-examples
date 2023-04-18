@@ -79,7 +79,7 @@ int main (int argc, char* argv[]) {
         }
 
         double pi_estimation = 4 * cum_results / (double) (N/2);
-        printf("[RANK %d] All results have arrived. Pi estmation: %0.12f", pi_estimation);
+        printf("[RANK %d] All results have arrived. Pi estmation: %0.12f", rank, pi_estimation);
     } else {
         // Execute the computation
         int32_t result = dart_computation<N>(rank, processes, rand_array);
